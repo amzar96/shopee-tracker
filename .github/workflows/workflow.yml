@@ -19,6 +19,6 @@ jobs:
         key: ${{ secrets.MOHDAMZAR_SECRET }}
         port: ${{ secrets.PORT }}
         script: |
-          cd /home/amzar/www/mohdamzar.com/home/amzar/Documents/shopee-tracker
+          cd /home/amzar/Documents/shopee-tracker
           git reset --hard HEAD
           git pull origin master
