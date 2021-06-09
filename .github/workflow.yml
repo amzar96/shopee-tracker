@@ -1,0 +1,24 @@
+name: CICD
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+    name: deploy
+    runs-on: ubuntu-latest
+    steps:
+    - name: cicd
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.USERNAME }}
+        key: ${{ secrets.MOHDAMZAR_SECRET }}
+        port: ${{ secrets.PORT }}
+        script: |
+          cd /home/amzar/www/mohdamzar.com/home/amzar/Documents/shopee-tracker
+          git reset --hard HEAD
+          git pull origin master
