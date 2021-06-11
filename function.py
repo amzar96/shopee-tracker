@@ -45,7 +45,7 @@ def getPayload(itemRes):
     try:
         percent = re.findall("[0-9][0-9]%", desc)[0]
     except IndexError:
-        percent = desc
+        percent = re.findall("[0-9]%", desc)[0]
 
     payload = {
         "blocks": [
