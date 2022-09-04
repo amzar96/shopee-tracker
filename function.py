@@ -36,6 +36,23 @@ def getItem(link):
         }
 
 
+def getPayloadEmpty():
+    payload = {
+        "blocks": [
+            {
+                "type": "section",
+                "block_id": "section567",
+                "text": {
+                    "type": "mrkdwn",
+                    "text": "No available link, please add/check",
+                },
+            }
+        ]
+    }
+
+    return payload
+
+
 def getPayload(itemRes):
     product_name = itemRes["product_name"]
     price = itemRes["price"]
@@ -70,7 +87,11 @@ def getPayload(itemRes):
     return payload
 
 
-def sendToSlack(itemRes):
+def sendToSlack(itemRes, no_data=False):
+    if no_data:
+        payload = getPayloadEmpty()
+    else:
+        payload = getPayload(itemRes)
+
     slack_webhook = os.environ.get("SLACK_URL")
-    payload = getPayload(itemRes)
     requests.post(slack_webhook, json=payload)
