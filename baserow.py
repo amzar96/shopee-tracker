@@ -15,7 +15,7 @@ base_url = "https://api.baserow.io/api/"
 
 def getData():
     res = requests.get(
-        url=f"{base_url}database/rows/table/95895b/?user_field_names=true",
+        url=f"{base_url}database/rows/table/95895/?user_field_names=true",
         headers=headers,
     )
 
