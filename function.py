@@ -3,6 +3,7 @@ from bs4 import BeautifulSoup
 import json
 import os
 import re
+import pandas as pd
 
 
 def getItem(link):
@@ -95,3 +96,23 @@ def sendToSlack(itemRes, no_data=False):
 
     slack_webhook = os.environ.get("SLACK_URL")
     requests.post(slack_webhook, json=payload)
+
+
+def getMinMax(df):
+    max_discount = df[df["discount"] == df["discount"].max()].discount.values.tolist()[
+        0
+    ]
+    max_price = df[
+        df["current_price"] == df["current_price"].max()
+    ].current_price.values.tolist()[0]
+
+    return max_discount, max_price
+
+
+def getEarliestRecord(df):
+    # df['created_at'] = pd.to_datetime(df.created_at)
+    df = df.sort_values("created_at")
+
+    earliest_entry = df.id.values.tolist()[:5]
+
+    return earliest_entry

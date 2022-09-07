@@ -3,28 +3,58 @@ import function
 import os
 from dotenv import load_dotenv
 import baserow as br
+import re
+import pandas as pd
 
-load_dotenv() # read .env
+load_dotenv()  # read .env
 
-# itemToCheck = [
-#     "https://shopee.com.my/setel.os/3555941670",
-#     "https://shopee.com.my/boschmy/100199746",
-#     "https://shopee.com.my/drcardin.os/8254227005",
-#     "https://shopee.com.my/switch_os/4752491426",
-#     "https://shopee.com.my/switch_os/7152493367"
-# ]
+df_shopee = br.getData(95895)
+df_shopee_count = br.getData(95895, count=True)
+df_shopee_history = br.getData(96385)
 
-itemToCheck = br.getData()
+df_shopee = df_shopee[df_shopee["Active"] == True]
 
-print(itemToCheck)
+delete_ids = []
 
-if len(itemToCheck) == 0:
-    function.sendToSlack(None, no_data=True)
+for index, row in df_shopee.iterrows():
+    URL = row["URL"]
+    product_id = row["product_id"]
+    active = row["Active"]
 
-for each in itemToCheck:
-    each = each.strip()
-    item = function.getItem(each)
+    df_history = df_shopee_history[df_shopee_history["product_id"] == product_id]
 
-    if "% off" in item["desc"]:
-        function.sendToSlack(item)
-    sleep(6)
+    shopee_product_link = URL.strip()
+    shopee_product = function.getItem(shopee_product_link)
+
+    if "% off" in shopee_product["desc"]:
+        shopee_now_price = round(float(shopee_product["price"].split(" ")[1]), 2)
+
+        try:
+            shopee_now_percent = re.findall("[0-9][0-9]%", shopee_product["desc"])[0]
+        except IndexError:
+            shopee_now_percent = re.findall("[0-9]%", shopee_product["desc"])[0]
+
+        shopee_now_percent = int(shopee_now_percent.split("%")[0])
+
+        if not df_history.empty:
+            max_discount, max_price = function.getMinMax(df_history)
+
+            # delete row
+            earliest_entry = function.getEarliestRecord(df_history)
+            for x in earliest_entry:
+                delete_ids.append(x)
+
+        else:
+            max_discount = 0
+            max_price = 0.0
+
+        br.pushData(product_id, shopee_now_percent, shopee_now_price)
+
+        if (shopee_now_percent > int(max_discount)) or (
+            float(shopee_now_price) > float(max_price)
+        ):
+            function.sendToSlack(shopee_product)
+
+
+if (df_shopee_count > 2500) and (len(delete_ids) > 0):
+    br.deleteData(delete_ids)
