@@ -51,7 +51,7 @@ for index, row in df_shopee.iterrows():
         br.pushData(product_id, shopee_now_percent, shopee_now_price)
 
         if (shopee_now_percent > int(max_discount)) or (
-            float(shopee_now_price) > float(max_price)
+            float(shopee_now_price) < float(max_price)
         ):
             function.sendToSlack(shopee_product)
 
