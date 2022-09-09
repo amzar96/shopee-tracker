@@ -37,7 +37,7 @@ for index, row in df_shopee.iterrows():
         shopee_now_percent = int(shopee_now_percent.split("%")[0])
 
         if not df_history.empty:
-            max_discount, max_price = function.getMinMax(df_history)
+            min_discount, min_price = function.getMinMax(df_history)
 
             # delete row
             earliest_entry = function.getEarliestRecord(df_history)
@@ -45,13 +45,13 @@ for index, row in df_shopee.iterrows():
                 delete_ids.append(x)
 
         else:
-            max_discount = 0
-            max_price = 0.0
+            min_discount = 0
+            min_price = 0.0
 
         br.pushData(product_id, shopee_now_percent, shopee_now_price)
 
-        if (shopee_now_percent > int(max_discount)) or (
-            float(shopee_now_price) < float(max_price)
+        if (shopee_now_percent > int(min_discount)) or (
+            float(shopee_now_price) < float(min_price)
         ):
             function.sendToSlack(shopee_product)
 

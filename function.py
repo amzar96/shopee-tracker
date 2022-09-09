@@ -99,11 +99,11 @@ def sendToSlack(itemRes, no_data=False):
 
 
 def getMinMax(df):
-    max_discount = df[df["discount"] == df["discount"].max()].discount.values.tolist()[
+    max_discount = df[df["discount"] == df["discount"].min()].discount.values.tolist()[
         0
     ]
     max_price = df[
-        df["current_price"] == df["current_price"].max()
+        df["current_price"] == df["current_price"].min()
     ].current_price.values.tolist()[0]
 
     return max_discount, max_price
