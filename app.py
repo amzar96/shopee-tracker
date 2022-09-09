@@ -6,6 +6,8 @@ import baserow as br
 import re
 import pandas as pd
 
+# from colorama import Fore
+
 load_dotenv()  # read .env
 
 df_shopee = br.getData(95895)
@@ -50,9 +52,7 @@ for index, row in df_shopee.iterrows():
 
         br.pushData(product_id, shopee_now_percent, shopee_now_price)
 
-        if (shopee_now_percent > int(min_discount)) or (
-            float(shopee_now_price) < float(min_price)
-        ):
+        if float(shopee_now_price) < float(min_price):
             function.sendToSlack(shopee_product)
 
 
